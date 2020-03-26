@@ -6,12 +6,17 @@ import (
 	"log"
 	"os"
 	"strings"
+	"flag"
 )
 
 func main() {
+	outputJSON := flag.Bool("json", false, "Output in JSON format")
+	goodOnly := flag.Bool("good", false, "Only output good proxies")
+	flag.Parse()
+
 	scanner := bufio.NewScanner(os.Stdin)
 
-	var data string; 
+	var data string;
 	
 	for scanner.Scan() {
 		data = scanner.Text()
@@ -34,7 +39,14 @@ func main() {
 
 	for i := 0; i < len(ports) * len(uris); i++ {
 		r := <-queue
-		if r.PingTime > 0 {
+
+		if *goodOnly && r.PingTime < 0 {
+			continue
+		}
+
+		if *outputJSON {
+			fmt.Printf("{\"address\": \"%s\", \"good\": %t, \"speed\": %v}\n", r.Url, r.PingTime > 0, r.PingTime)
+		} else {
 			fmt.Printf("%s %v\n", r.Url, r.PingTime)
 		}
 	}

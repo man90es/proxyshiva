@@ -4,10 +4,14 @@ This is a tool for checking proxies availability
 
 ## To-do:
 
-* JSON output format
+* ~~JSON output format~~
+* ~~Option to only output good proxies~~
 * Wrapper to use checker from Node.js
-* Listening to stdin continuously without exiting
+* Listen to stdin continuously without exiting
 * SOCKS proxies support
+* Take timeout as a parameter
+* SOCKS proxies support
+* Wildcard input
 
 ## Building from source
 
