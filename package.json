@@ -1,0 +1,8 @@
+{
+  "name": "proxyshiva",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@bitbucket.org:deadMNGO/proxyshiva.git",
+  "author": "deadMNGO <deadMNGO@baka.solutions>",
+  "license": "MIT"
+}
