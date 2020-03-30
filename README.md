@@ -10,7 +10,7 @@ This is a tool for checking proxies availability
 * ~~Listen to stdin continuously without exiting~~
 * ~~Take timeout as a parameter~~
 * SOCKS proxies support
-* Wildcard input
+* ~~Parse ranges in input data~~
 
 ## Building from source
 

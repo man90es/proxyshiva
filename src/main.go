@@ -5,7 +5,6 @@ import (
 	"bufio"
 	"log"
 	"os"
-	"strings"
 	"flag"
 )
 
@@ -18,28 +17,29 @@ func main() {
 
 	scanner := bufio.NewScanner(os.Stdin)
 
-	var data string;
 	queue := make(chan KRequest, 100)
 	
 	for {
+		data := make([][]string, 2)
+		for i := range data {
+			data[i] = make([]string, 0)
+		}
+
 		if scanner.Scan() {
-			data = scanner.Text()
+			data = parseInput(scanner.Text())
 		}
 
 		if err := scanner.Err(); err != nil {
 			log.Println(err)
 		}
 
-		uris := strings.Split(strings.Split(data, ":")[0], ",")
-		ports := strings.Split(strings.Split(data, ":")[1], ",")
-
-		for _, port := range ports {
-			for _, uri := range uris {
-				go check(uri, port, queue, *timeout)
+		for _, address := range data[0] {
+			for _, port := range data[1] {
+				go check(address, port, queue, *timeout)
 			}
 		}
 
-		for i := 0; i < len(ports) * len(uris); i++ {
+		for i := 0; i < len(data[0]) * len(data[1]); i++ {
 			r := <-queue
 
 			if *goodOnly && r.PingTime < 0 {
