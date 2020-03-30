@@ -30,7 +30,7 @@ $ echo "0.0.0.0,1.1.1.1:80,8080,1080" | ./bin/proxyshiva > good.txt
 ```
 or interactive
 ```bash
-$ user@local $ cat | ./bin/proxyshiva > good.txt
+$ cat | ./bin/proxyshiva > good.txt
 0.0.0.0:8080
 ```
 etc.
