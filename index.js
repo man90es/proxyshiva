@@ -1,7 +1,9 @@
 const spawn = require('child_process').spawn
 
-exports.check = (addresses, ports) => {
-	let shiva = spawn('./bin/proxyshiva', ['-json'])
+const shiva = spawn('./bin/proxyshiva', ['-json', '-persistent'])
+shiva.stdin.setEncoding('utf-8')
+
+check = (addresses, ports) => {
 	let responseStack = []
 
 	return new Promise((resolve, reject) => {
@@ -13,8 +15,6 @@ exports.check = (addresses, ports) => {
 			}
 		})
 
-		shiva.stdin.setEncoding('utf-8')
 		shiva.stdin.write(`${addresses.join(',')}:${ports.join(',')}\n`)
-		shiva.stdin.end()
 	})
 }

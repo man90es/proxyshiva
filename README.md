@@ -7,7 +7,7 @@ This is a tool for checking proxies availability
 * ~~JSON output format~~
 * ~~Option to only output good proxies~~
 * ~~Wrapper to use checker from Node.js~~
-* Listen to stdin continuously without exiting
+* ~~Listen to stdin continuously without exiting~~
 * Take timeout as a parameter
 * SOCKS proxies support
 * Wildcard input
@@ -22,11 +22,16 @@ make build
 
 ## Usage from console
 ```bash
-echo "0.0.0.0:8080" | ./bin/proxyshiva
+$ echo "0.0.0.0:8080" | ./bin/proxyshiva
 ```
 or
 ```bash
-echo "0.0.0.0,1.1.1.1:80,8080,1080" | ./bin/proxyshiva > good.txt
+$ echo "0.0.0.0,1.1.1.1:80,8080,1080" | ./bin/proxyshiva > good.txt
+```
+or interactive
+```bash
+$ user@local $ cat | ./bin/proxyshiva > good.txt
+0.0.0.0:8080
 ```
 etc.
 
