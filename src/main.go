@@ -13,6 +13,7 @@ func main() {
 	outputJSON := flag.Bool("json", false, "Output in JSON format")
 	goodOnly := flag.Bool("good", false, "Only output good proxies")
 	persistent := flag.Bool("persistent", false, "Don't exit after completing the task and wait for new input")
+	timeout := flag.Int("timeout", 15, "Request timeout in seconds")
 	flag.Parse()
 
 	scanner := bufio.NewScanner(os.Stdin)
@@ -34,7 +35,7 @@ func main() {
 
 		for _, port := range ports {
 			for _, uri := range uris {
-				go check(uri, port, queue)
+				go check(uri, port, queue, *timeout)
 			}
 		}
 

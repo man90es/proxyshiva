@@ -16,8 +16,8 @@ type KRequest struct {
 
 var defaultURL = "https://ipecho.net/plain"
 
-func check(ip string, port string, c chan KRequest) {
-	var timeout = time.Duration(15 * time.Second)
+func check(ip string, port string, c chan KRequest, sTimeout int) {
+	var timeout = time.Duration(time.Duration(sTimeout) * time.Second)
 
 	startAt := time.Now()
 	host := fmt.Sprintf("%s:%s", ip, port)
