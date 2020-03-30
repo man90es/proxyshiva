@@ -24,13 +24,13 @@ make build
 ```bash
 $ echo "0.0.0.0:8080" | ./bin/proxyshiva
 ```
-or
+or give multiple values and output to file 
 ```bash
 $ echo "0.0.0.0,1.1.1.1:80,8080,1080" | ./bin/proxyshiva > good.txt
 ```
-or interactive
+or use interactive mode
 ```bash
-$ cat | ./bin/proxyshiva > good.txt
+$ cat | ./bin/proxyshiva -persistent
 0.0.0.0:8080
 ```
 etc.
