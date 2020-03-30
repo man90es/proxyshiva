@@ -8,7 +8,7 @@ This is a tool for checking proxies availability
 * ~~Option to only output good proxies~~
 * ~~Wrapper to use checker from Node.js~~
 * ~~Listen to stdin continuously without exiting~~
-* Take timeout as a parameter
+* ~~Take timeout as a parameter~~
 * SOCKS proxies support
 * Wildcard input
 
