@@ -1,6 +1,6 @@
 const spawn = require('child_process').spawn
 
-const shiva = spawn('./bin/proxyshiva', ['-json', '-persistent'])
+const shiva = spawn('./bin/proxyshiva', ['-v', '-p'])
 shiva.stdin.setEncoding('utf-8')
 
 check = (addresses, ports) => {
