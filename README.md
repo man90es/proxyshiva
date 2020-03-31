@@ -52,6 +52,8 @@ main()
 * ~~Take timeout as a parameter~~
 * ~~SOCKS proxies support~~
 * ~~Parse ranges in input data~~
+* Option to randomize check order
+* IPv6 proxies support
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
