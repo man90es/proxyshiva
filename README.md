@@ -28,6 +28,7 @@ $ echo "192.168.0.1-192.168.1.0:80-90" | ./bin/proxyshiva
 ## Flags
 ```
 -v 		Verbose output in JSON format
+-r 		Randomize check order
 -p 		Interactive mode
 -t 	15 	Request timeout in seconds
 ```
@@ -45,14 +46,7 @@ main()
 
 ## To-do:
 
-* ~~JSON output format~~
-* ~~Option to only output good proxies~~
-* ~~Wrapper to use checker from Node.js~~
-* ~~Listen to stdin continuously without exiting~~
-* ~~Take timeout as a parameter~~
-* ~~SOCKS proxies support~~
-* ~~Parse ranges in input data~~
-* Option to randomize check order
+* Split ranges into smaller ones if too big
 * IPv6 proxies support
 
 ## License

@@ -7,6 +7,8 @@ import (
 	"os"
 	"flag"
 	"encoding/json"
+	"math/rand"
+	"time"
 )
 
 type KRequest struct {
@@ -19,11 +21,23 @@ type KRequest struct {
 	Speed 		float64 	`json:"speed"`
 }
 
+func shuffle(vals []string) {
+	r := rand.New(rand.NewSource(time.Now().Unix()))
+
+	for len(vals) > 0 {
+		n := len(vals)
+		randIndex := r.Intn(n)
+		vals[n-1], vals[randIndex] = vals[randIndex], vals[n-1]
+		vals = vals[:n-1]
+	}
+}
+
 func main() {
 	schemes := [4]string{"http", "https", "socks4", "socks5"}
 
 	flagV := flag.Bool("v", false, "Verbose output in JSON format")
 	flagP := flag.Bool("p", false, "Don't exit after completing the task and wait for more input")
+	flagR := flag.Bool("r", false, "Randomize check order")
 	flagT := flag.Int("t", 15, "Request timeout in seconds")
 	flag.Parse()
 
@@ -43,6 +57,10 @@ func main() {
 
 		if err := scanner.Err(); err != nil {
 			log.Println(err)
+		}
+
+		if *flagR {
+			shuffle(data[0])
 		}
 
 		for _, address := range data[0] {
