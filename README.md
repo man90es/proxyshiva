@@ -18,7 +18,7 @@ $ cat addresses.txt | ./bin/proxyshiva -v -t 30
 ```
 To input several addresses and/or ports, separate them with comma:
 ```bash
-$ echo "192.168.0.1-192.168.0.2:80,8080" | ./bin/proxyshiva
+$ echo "192.168.0.1,192.168.0.2:80,8080" | ./bin/proxyshiva
 ```
 To check all addresses and/or ports in range, use dash:
 ```bash
