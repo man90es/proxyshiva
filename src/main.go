@@ -53,10 +53,9 @@ func main() {
 
 		if scanner.Scan() {
 			data = parseInput(scanner.Text())
-		}
-
-		if err := scanner.Err(); err != nil {
-			log.Println(err)
+		} else {
+			time.Sleep(2 * time.Second)
+			continue
 		}
 
 		if *flagR {
