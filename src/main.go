@@ -41,16 +41,16 @@ func main() {
 	flag.Parse()
 
 	scanner := bufio.NewScanner(os.Stdin)
-
 	queue := make(chan KRequest, 100)
 	
 	for {
 		data := make([][]string, 2)
-		for i := range data {
-			data[i] = make([]string, 0)
-		}
 
 		if scanner.Scan() {
+			for i := range data {
+				data[i] = make([]string, 0)
+			}
+			
 			data = parseInput(scanner.Text())
 		} else {
 			time.Sleep(2 * time.Second)
