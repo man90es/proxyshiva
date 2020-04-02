@@ -3,22 +3,9 @@ package main
 import (
 	"strings"
 	"net"
-	"encoding/binary"
 	"strconv"
+	"utils"
 )
-
-func ip2int(ip net.IP) uint32 {
-	if len(ip) == 16 {
-		return binary.BigEndian.Uint32(ip[12:16])
-	}
-	return binary.BigEndian.Uint32(ip)
-}
-
-func int2ip(nn uint32) net.IP {
-	ip := make(net.IP, 4)
-	binary.BigEndian.PutUint32(ip, nn)
-	return ip
-}
 
 func parseInput(in string) [][]string {
 	out := make([][]string, 2)
@@ -33,8 +20,8 @@ func parseInput(in string) [][]string {
 		if strings.Contains(IPRange, "-") {
 			r := strings.Split(IPRange, "-")
 
-			for ip := ip2int(net.ParseIP(r[0])); ip < ip2int(net.ParseIP(r[1])); ip++ {
-				out[0] = append(out[0], int2ip(ip).String())
+			for ip := utils.IpToInt(net.ParseIP(r[0])); ip < utils.IpToInt(net.ParseIP(r[1])); ip++ {
+				out[0] = append(out[0], utils.IntToIp(ip).String())
 			}
 		} else {
 			out[0] = append(out[0], IPRange)
