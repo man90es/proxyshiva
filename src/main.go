@@ -6,7 +6,6 @@ import (
 	"os"
 	"flag"
 	"encoding/json"
-	"math/rand"
 	"time"
 )
 
@@ -20,62 +19,48 @@ type KRequest struct {
 	Speed 		float64 	`json:"speed"`
 }
 
-func shuffle(vals []string) {
-	r := rand.New(rand.NewSource(time.Now().Unix()))
-
-	for len(vals) > 0 {
-		n := len(vals)
-		randIndex := r.Intn(n)
-		vals[n-1], vals[randIndex] = vals[randIndex], vals[n-1]
-		vals = vals[:n-1]
-	}
-}
-
 func main() {
-	schemes := [4]string{"http", "https", "socks4", "socks5"}
+	schemes := []string{"http", "https", "socks4", "socks5"}
 
 	flagV := flag.Bool("v", false, "Verbose output in JSON format")
 	flagP := flag.Bool("p", false, "Don't exit after completing the task and wait for more input")
-	flagR := flag.Bool("r", false, "Randomize check order")
 	flagT := flag.Int("t", 15, "Request timeout in seconds")
 	flag.Parse()
 
 	scanner := bufio.NewScanner(os.Stdin)
-	queue := make(chan KRequest, 100)
-	
+	resultQueue := make(chan KRequest, 100)
+	taskQueue := make(chan KRequest, 100)
+
+	for i := 0; i < 100; i++ {
+		go checkerRoutine(taskQueue, resultQueue, flagT)
+	}
+
 	for {
 		data := make([][]string, 2)
+		requestCount := 0
 
 		if scanner.Scan() {
 			for i := range data {
 				data[i] = make([]string, 0)
 			}
 			
-			data = parseInput(scanner.Text())
+			requestCount = schedule(scanner.Text(), schemes, taskQueue)
 		} else {
 			time.Sleep(2 * time.Second)
 			continue
 		}
 
-		if *flagR {
-			shuffle(data[0])
-		}
+		if *flagV {
+			for i := 0; i < requestCount; i++ {
+				r := <- resultQueue
 
-		for _, address := range data[0] {
-			for _, port := range data[1] {
-				for _, scheme := range schemes {
-					go check(scheme, address, port, queue, *flagT)
-				}
-			}
-		}
-
-		for i := 0; i < len(data[0]) * len(data[1]) * len(schemes); i++ {
-			r := <- queue
-
-			if *flagV {
 				jr, _ := json.Marshal(r)
 				fmt.Println(string(jr))
-			} else {
+			}
+		} else {
+			for i := 0; i < requestCount; i++ {
+				r := <- resultQueue
+
 				if r.Good {
 					fmt.Printf("%s://%s:%s\n", r.Scheme, r.Address, r.Port)
 				}
@@ -86,4 +71,7 @@ func main() {
 			break
 		}
 	}
+
+	close(resultQueue)
+	close(taskQueue)
 }
