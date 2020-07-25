@@ -45,8 +45,7 @@ main()
 ```
 
 ## To-do:
-
-* Split ranges into smaller ones if too big
+* Save and restore sessions
 * IPv6 proxies support
 
 ## License
