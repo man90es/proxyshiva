@@ -29,7 +29,9 @@ func main() {
 
 	scanner := bufio.NewScanner(os.Stdin)
 	resultQueue := make(chan KRequest, 100)
+	defer close(resultQueue)
 	taskQueue := make(chan KRequest, 100)
+	defer close(taskQueue)
 
 	for i := 0; i < 100; i++ {
 		go checkerRoutine(taskQueue, resultQueue, flagT)
@@ -71,7 +73,4 @@ func main() {
 			break
 		}
 	}
-
-	close(resultQueue)
-	close(taskQueue)
 }
