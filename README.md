@@ -2,8 +2,14 @@
 
 ProxyShiva is a concurrent command-line proxy checker application.
 
-## Building from source
-Prerequisites: Go >= 1.15
+## Getting the binary
+### Prebuilt
+You can download prebuilt binaries [here](https://gitlab.com/man90/ProxyShiva/-/pipelines).
+
+### Building from source
+Prerequisites: <abbr title="Not tested on other platforms.">GNU/Linux</abbr>, Go >=1.15
+
+Command:
 ```bash
 go build
 ```

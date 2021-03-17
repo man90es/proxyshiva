@@ -1,0 +1,10 @@
+build:
+  image: golang:1.15
+  stage: build
+  script:
+    - go build -o ${CI_PROJECT_DIR}/dist/ProxyShiva
+  artifacts:
+    paths:
+      - dist
+  only:
+    - master
