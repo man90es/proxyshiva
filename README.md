@@ -1,52 +1,45 @@
 # ProxyShiva
 
-This is a tool for checking proxies availability
+ProxyShiva is a concurrent command-line proxy checker application.
 
 ## Building from source
-
-You'll need a Golang compiler installed for this.
-
+Prerequisites: Go >= 1.15
 ```bash
-make build
+go build
 ```
 
-## Usage from console
-Pipe addresses into shiva using echo or cat command:
+## Usage
+Use Shiva's standard input stream to check proxies:
 ```bash
-$ echo "192.168.0.2:8080" | ./bin/proxyshiva -v -t 30
-$ cat addresses.txt | ./bin/proxyshiva -v -t 30
+$ echo "socks5://127.0.0.1:9050" | ./ProxyShiva
 ```
-To input several addresses and/or ports, separate them with comma:
+
+Put the output into a file:
 ```bash
-$ echo "192.168.0.1,192.168.0.2:80,8080" | ./bin/proxyshiva
+$ echo "socks5://127.0.0.1:9050" | ./ProxyShiva > good.txt
 ```
-To check all addresses and/or ports in range, use dash:
+
+Use scheme lists, IP ranges and port ranges to check more proxies at once:
 ```bash
-$ echo "192.168.0.1-192.168.1.0:80-90" | ./bin/proxyshiva
+$ echo "http,https,socks5://192.168.0.2-192.168.0.10:8080-8089" | ./ProxyShiva
+```
+
+Put files into the standard input stream for more convenience and flexibility:
+```bash
+$ touch addresses.txt
+$ echo "socks5://127.0.0.1:9050" >> addresses.txt
+$ echo "http,https,socks5://192.168.0.2-192.168.0.10:8080-8089" >> addresses.txt
+$ cat addresses.txt | ./ProxyShiva
 ```
 
 ## Flags
-```
--v 		Verbose output in JSON format
--r 		Randomize check order
--p 		Interactive mode
--t 	15 	Request timeout in seconds
-```
 
-## Usage as Node.js library
-```nodejs
-const proxyShiva = require('./proxyshiva')
-
-async function main() {
-	console.log(await proxyShiva.check(['0.0.0.0','1.1.1.1'], ['80', '8080']))
-}
-
-main()
-```
-
-## To-do:
-* Save and restore sessions
-* IPv6 proxies support
+| Flag | Description |
+| ------ | ------ |
+| -json | Output full data in JSON format |
+| -interactive | Don't exit after completing the task and wait for more input |
+| -skipcert | Skip the TLS certificate verification |
+| -timeout | Request timeout in seconds (15 by default) |
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
