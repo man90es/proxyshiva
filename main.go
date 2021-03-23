@@ -13,11 +13,14 @@ import (
 	"net/http"
 	"net/url"
 	"crypto/tls"
+	"sync"
 
 	"inet.af/netaddr"
 )
 
 const defaultURL = "https://ipecho.net/plain"
+
+var wg sync.WaitGroup
 
 type proxy struct {
 	Scheme 		string 		`json:"scheme"`
@@ -126,23 +129,12 @@ func main() {
 	flagTimeout := flag.Int("timeout", 15, "Request timeout in seconds")
 	flag.Parse()
 
-	var waiting int
 	resultQueue := make(chan *proxy)
 	defer close(resultQueue)
 
-	scanner := bufio.NewScanner(os.Stdin)
-
-	for {
-		if scanner.Scan() {
-			for p := range requestGenerator(scanner.Text()) {
-				waiting++
-				go p.check(resultQueue, flagTimeout, flagSkipCert)
-			}
-		}
-
-		for ; waiting > 0; waiting-- {
-			result := <- resultQueue
-
+	// Receive and print out completed checks
+	go func() {
+		for result := range resultQueue {
 			if *flagJSON {
 				jr, _ := json.Marshal(*result)
 				fmt.Println(string(jr))
@@ -151,9 +143,24 @@ func main() {
 					fmt.Printf("%v://%v:%v\n", result.Scheme, result.Address, result.Port)
 				}
 			}
+
+			wg.Done()
+		}
+	}()
+
+	// Scan for input
+	scanner := bufio.NewScanner(os.Stdin)
+
+	for {
+		if scanner.Scan() {
+			for p := range requestGenerator(scanner.Text()) {
+				wg.Add(1)
+				go p.check(resultQueue, flagTimeout, flagSkipCert)
+			}
 		}
 
 		if !*flagInteractive {
+			wg.Wait()
 			os.Exit(0)
 		}
 	}
