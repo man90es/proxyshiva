@@ -1,19 +1,19 @@
 package main
 
 import (
-	"fmt"
 	"bufio"
-	"os"
-	"flag"
-	"time"
-	"strings"
-	"strconv"
+	"crypto/tls"
 	"encoding/json"
+	"flag"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"crypto/tls"
+	"os"
+	"strconv"
+	"strings"
 	"sync"
+	"time"
 
 	"inet.af/netaddr"
 )
@@ -23,13 +23,42 @@ const defaultURL = "https://ipecho.net/plain"
 var wg sync.WaitGroup
 
 type proxy struct {
-	Scheme 		string 		`json:"scheme"`
-	Address 	netaddr.IP 	`json:"address"`
-	Port 		uint16 		`json:"port"`
-	Good 		bool 		`json:"good"`
+	Scheme      string      `json:"scheme"`
+	Address     netaddr.IP  `json:"address"`
+	Port        uint16      `json:"port"`
+	Good        bool        `json:"good"`
 	ExitAddress *netaddr.IP `json:"exitAddress,omitempty"`
-	Error 		string 		`json:"error,omitempty"`
-	Speed 		float64 	`json:"speed,omitempty"`
+	Error       string      `json:"error,omitempty"`
+	Speed       float64     `json:"speed,omitempty"`
+}
+
+var reservedSubnets = [...]netaddr.IPPrefix{
+	netaddr.MustParseIPPrefix("0.0.0.0/8"),
+	netaddr.MustParseIPPrefix("10.0.0.0/8"),
+	netaddr.MustParseIPPrefix("100.64.0.0/10"),
+	netaddr.MustParseIPPrefix("127.0.0.0/8"),
+	netaddr.MustParseIPPrefix("169.254.0.0/16"),
+	netaddr.MustParseIPPrefix("172.16.0.0/12"),
+	netaddr.MustParseIPPrefix("192.0.0.0/24"),
+	netaddr.MustParseIPPrefix("192.0.2.0/24"),
+	netaddr.MustParseIPPrefix("192.88.99.0/24"),
+	netaddr.MustParseIPPrefix("192.168.0.0/16"),
+	netaddr.MustParseIPPrefix("198.18.0.0/15"),
+	netaddr.MustParseIPPrefix("198.51.100.0/24"),
+	netaddr.MustParseIPPrefix("203.0.113.0/24"),
+	netaddr.MustParseIPPrefix("224.0.0.0/4"),
+	netaddr.MustParseIPPrefix("240.0.0.0/4"),
+	netaddr.MustParseIPPrefix("255.255.255.255/32"),
+}
+
+func (p proxy) isReserved() bool {
+	for _, subnet := range reservedSubnets {
+		if subnet.Contains(p.Address) {
+			return true
+		}
+	}
+
+	return false
 }
 
 func (p proxy) check(resultQueue chan<- *proxy, timeout *int, skipCert *bool) {
@@ -37,12 +66,12 @@ func (p proxy) check(resultQueue chan<- *proxy, timeout *int, skipCert *bool) {
 	startAt := time.Now()
 	proxyUrl := &url.URL{
 		Scheme: p.Scheme,
-		Host: fmt.Sprintf("%v:%v", addressString, p.Port),
+		Host:   fmt.Sprintf("%v:%v", addressString, p.Port),
 	}
 
 	client := &http.Client{
 		Transport: &http.Transport{
-			Proxy: http.ProxyURL(proxyUrl),
+			Proxy:           http.ProxyURL(proxyUrl),
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: *skipCert},
 		},
 
@@ -50,12 +79,12 @@ func (p proxy) check(resultQueue chan<- *proxy, timeout *int, skipCert *bool) {
 	}
 
 	if response, err := client.Get(defaultURL); err == nil {
-		p.Speed = float64(time.Now().UnixNano() - startAt.UnixNano()) / 1e9
+		p.Speed = float64(time.Now().UnixNano()-startAt.UnixNano()) / 1e9
 		p.Good = true
 
 		body, _ := ioutil.ReadAll(response.Body)
 		defer response.Body.Close()
-		
+
 		if strings.Contains(string(body), addressString) {
 			p.ExitAddress = &p.Address
 		} else {
@@ -110,9 +139,9 @@ func requestGenerator(in string) chan proxy {
 			for port := portRange[0]; port <= portRange[1]; port++ { // Rotate ports
 				for address := addressRange.From; address.Less(addressRange.To) || address == addressRange.To; address = address.Next() { // Rotate IPs
 					out <- proxy{
-						Scheme: scheme,
+						Scheme:  scheme,
 						Address: address,
-						Port: port,
+						Port:    port,
 					}
 				}
 			}
@@ -127,6 +156,7 @@ func main() {
 	flagInteractive := flag.Bool("interactive", false, "Don't exit after completing the task and wait for more input")
 	flagSkipCert := flag.Bool("skipcert", false, "Skip the TLS certificate verification")
 	flagTimeout := flag.Int("timeout", 15, "Request timeout in seconds")
+	flagSkipRes := flag.Bool("skipres", false, "Skip reserved IP addresses")
 	flag.Parse()
 
 	resultQueue := make(chan *proxy)
@@ -154,8 +184,10 @@ func main() {
 	for {
 		if scanner.Scan() {
 			for p := range requestGenerator(scanner.Text()) {
-				wg.Add(1)
-				go p.check(resultQueue, flagTimeout, flagSkipCert)
+				if !*flagSkipRes || !p.isReserved() {
+					wg.Add(1)
+					go p.check(resultQueue, flagTimeout, flagSkipCert)
+				}
 			}
 		}
 
