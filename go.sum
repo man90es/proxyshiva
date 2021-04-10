@@ -7,3 +7,5 @@ go4.org/unsafe/assume-no-moving-gc v0.0.0-20201222180813-1025295fd063/go.mod h1:
 inet.af v0.0.0-20181218191229-53da77bc832c h1:U3RoiyEF5b3Y1SVL6NNvpkgqUz2qS3a0OJh9kpSCN04=
 inet.af/netaddr v0.0.0-20210313195008-843b4240e319 h1:cSGjHEjS/Nu6pts6yZfSYsRqcfW5ieqSrQI+XcZQObM=
 inet.af/netaddr v0.0.0-20210313195008-843b4240e319/go.mod h1:I2i9ONCXRZDnG1+7O8fSuYzjcPxHQXrIfzD/IkR87x4=
+inet.af/netaddr v0.0.0-20210403172118-1e1430f727e0 h1:ANl7piXB3SHmhwTNeTO0yl0yf4gO3/aaFjcBCdH9Ftg=
+inet.af/netaddr v0.0.0-20210403172118-1e1430f727e0/go.mod h1:I2i9ONCXRZDnG1+7O8fSuYzjcPxHQXrIfzD/IkR87x4=
