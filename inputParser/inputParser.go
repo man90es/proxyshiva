@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"strings"
 
-	"gitlab.com/man90/ProxyShiva/proxy"
+	"github.com/octoman90/proxyshiva/proxy"
 	"inet.af/netaddr"
 )
 

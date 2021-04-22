@@ -8,8 +8,8 @@ import (
 	"os"
 	"sync"
 
-	"gitlab.com/man90/ProxyShiva/inputParser"
-	"gitlab.com/man90/ProxyShiva/proxy"
+	"github.com/octoman90/proxyshiva/inputParser"
+	"github.com/octoman90/proxyshiva/proxy"
 )
 
 var wg sync.WaitGroup

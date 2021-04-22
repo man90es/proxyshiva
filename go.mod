@@ -1,4 +1,4 @@
-module gitlab.com/man90/ProxyShiva
+module github.com/octoman90/proxyshiva
 
 go 1.15
 
