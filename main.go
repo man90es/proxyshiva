@@ -28,13 +28,11 @@ func main() {
 	// Receive and print out completed checks
 	go func() {
 		for result := range resultQueue {
-			if *flagJSON {
+			if *flagJSON { // Print out every result in JSON format
 				jr, _ := json.Marshal(*result)
 				fmt.Println(string(jr))
-			} else {
-				if result.Good {
-					fmt.Printf("%v://%v:%v\n", result.Scheme, result.Address, result.Port)
-				}
+			} else if result.Good { // Print out good proxies in short format
+				fmt.Printf("%v://%v:%v\n", result.Scheme, result.Address, result.Port)
 			}
 
 			wg.Done()
@@ -43,7 +41,6 @@ func main() {
 
 	// Scan for input
 	scanner := bufio.NewScanner(os.Stdin)
-
 	for {
 		if scanner.Scan() {
 			for proxy := range inputParser.RequestGenerator(scanner.Text()) {
