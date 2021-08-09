@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"regexp"
 	"sync"
 
 	"github.com/octoman90/proxyshiva/inputParser"
@@ -13,6 +14,31 @@ import (
 )
 
 var wg sync.WaitGroup
+
+func validateScanned(str string) bool {
+	ipRegex := `((?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?))`
+	protocolRegex := `(http|https|socks4|socks5)`
+	portRegex := `\d+`
+
+	regex := regexp.MustCompile(`` +
+		// Match protocol or protocol list
+		`^(` + protocolRegex + `(,` + protocolRegex + `)*)+` +
+
+		// Match "://"
+		`:\/\/` +
+
+		// Match IP or IP range
+		ipRegex + `(-` + ipRegex + `)?` +
+
+		// Match ":"
+		`:` +
+
+		// Match port or port range
+		`(` + portRegex + `)(-` + portRegex + `)?$`,
+	)
+
+	return regex.MatchString(str)
+}
 
 func main() {
 	flagJSON := flag.Bool("json", false, "Output full data in JSON format")
@@ -43,7 +69,12 @@ func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
 		if scanner.Scan() {
-			for proxy := range inputParser.RequestGenerator(scanner.Text()) {
+			scanned := scanner.Text()
+			if valid := validateScanned(scanned); !valid {
+				continue
+			}
+
+			for proxy := range inputParser.RequestGenerator(scanned) {
 				if !*flagSkipRes || !proxy.IsReserved() {
 					wg.Add(1)
 					go proxy.Check(resultQueue, flagTimeout, flagSkipCert)
