@@ -1,6 +1,7 @@
 package inputParser
 
 import (
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -8,8 +9,38 @@ import (
 	"inet.af/netaddr"
 )
 
+func validateScanned(str string) bool {
+	ipRegex := `((?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?))`
+	protocolRegex := `(http|https|socks4|socks5)`
+	portRegex := `\d+`
+
+	regex := regexp.MustCompile(`` +
+		// Match protocol or protocol list
+		`^(` + protocolRegex + `(,` + protocolRegex + `)*)+` +
+
+		// Match "://"
+		`:\/\/` +
+
+		// Match IP or IP range
+		ipRegex + `(-` + ipRegex + `)?` +
+
+		// Match ":"
+		`:` +
+
+		// Match port or port range
+		`(` + portRegex + `)(-` + portRegex + `)?$`,
+	)
+
+	return regex.MatchString(str)
+}
+
 func RequestGenerator(in string) chan proxy.Proxy {
 	out := make(chan proxy.Proxy)
+
+	if !validateScanned(in) {
+		defer close(out)
+		return out
+	}
 
 	schemeEndIndex := strings.Index(in, "://")
 	addressStartIndex := schemeEndIndex + 3
