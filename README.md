@@ -37,10 +37,11 @@ cat addresses.txt | ./proxyshiva
 
 ## Flags
 
-| Flag         | Description                                                  |
-| ------------ | ------------------------------------------------------------ |
-| -json        | Output full data in JSON format                              |
-| -interactive | Don't exit after completing the task and wait for more input |
-| -skipcert    | Skip the TLS certificate verification                        |
-| -skipres     | Skip reserved IP addresses                                   |
-| -timeout=15  | Request timeout in seconds (15 by default)                   |
+| Flag          | Description                                                  |
+| ------------- | ------------------------------------------------------------ |
+| -json         | Output full data in JSON format                              |
+| -interactive  | Don't exit after completing the task and wait for more input |
+| -skipcert     | Skip the TLS certificate verification                        |
+| -skipres      | Skip reserved IP addresses                                   |
+| -parallel=100 | How many requests to make simultaneously (100 by default)    |
+| -timeout=15   | Request timeout in seconds (15 by default)                   |
